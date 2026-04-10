@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1c1a" media="(prefers-color-scheme: dark)">
+<title>ワンピース キャラ関係図</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eeede9;
+  --text: #1a1a18; --text2: #6b6a64; --text3: #9b9a94;
+  --border: rgba(0,0,0,0.11); --border2: rgba(0,0,0,0.2);
+  --accent: #178DDC; --radius: 10px; --radius-lg: 14px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1a; --bg2: #252522; --bg3: #2e2e2b;
+    --text: #e8e6de; --text2: #9b9a94; --text3: #6b6a64;
+    --border: rgba(255,255,255,0.09); --border2: rgba(255,255,255,0.18);
+  }
+}
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100svh; overflow-x: hidden;
+  padding-bottom: calc(80px + var(--safe-bottom));
+}
+
+/* ── ヘッダー ── */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bg); border-bottom: 0.5px solid var(--border);
+  padding: 12px 16px 10px;
+}
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-title { font-size: 17px; font-weight: 700; color: var(--text); }
+.mode-btns { display: flex; gap: 4px; }
+.mbtn {
+  padding: 6px 14px; font-size: 13px; border-radius: 20px;
+  border: 0.5px solid var(--border2); background: transparent;
+  color: var(--text2); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: all .15s;
+}
+.mbtn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* 巻数スライダー */
+.vol-row { display: flex; align-items: center; gap: 10px; }
+.vol-label { font-size: 13px; color: var(--text2); white-space: nowrap; flex-shrink: 0; }
+.vol-slider { flex: 1; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: var(--border2); outline: none; accent-color: var(--accent); }
+.vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+.vol-num { font-size: 14px; font-weight: 600; color: var(--text); min-width: 60px; text-align: right; }
+
+/* 検索 */
+.search-wrap { padding: 8px 16px 0; }
+.search-box {
+  width: 100%; padding: 10px 14px; border-radius: var(--radius);
+  border: 0.5px solid var(--border2); background: var(--bg2);
+  color: var(--text); font-size: 15px; outline: none;
+  -webkit-appearance: none;
+}
+.search-box::placeholder { color: var(--text3); }
+.search-box:focus { border-color: var(--accent); background: var(--bg); }
+
+/* フィルター・アーク */
+.filter-section { padding: 8px 16px 0; }
+.filter-label { font-size: 11px; color: var(--text3); margin-bottom: 5px; }
+.pill-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.pill-row::-webkit-scrollbar { display: none; }
+.fbtn, .arc-pill {
+  flex-shrink: 0; padding: 5px 12px; font-size: 12px; border-radius: 16px;
+  border: 0.5px solid var(--border2); background: transparent;
+  color: var(--text2); cursor: pointer; white-space: nowrap;
+  -webkit-tap-highlight-color: transparent; transition: all .15s;
+}
+.fbtn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.arc-pill { background: var(--bg2); }
+.arc-pill.active { background: #533AB7; border-color: #533AB7; color: #fff; }
+.arc-pill.locked { opacity: .35; }
+
+/* コンテンツエリア */
+.content { padding: 12px 16px; }
+
+/* カードグリッド */
+#cardGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 480px) { #cardGrid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 680px) { #cardGrid { grid-template-columns: repeat(4, 1fr); } }
+
+.card {
+  background: var(--bg); border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  active-tap-color: transparent;
+  transition: border-color .1s;
+}
+.card:active { background: var(--bg2); }
+.card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.av {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.c-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.c-role { font-size: 10px; color: var(--text2); margin-top: 1px; line-height: 1.3; }
+.c-badge { display: inline-block; padding: 2px 7px; border-radius: 9px; font-size: 10px; margin-top: 4px; }
+.c-debut { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+/* ネットワーク */
+#netWrap {
+  width: 100%; border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden; background: var(--bg2);
+}
+#netCanvas { display: block; touch-action: none; }
+.net-hint { font-size: 11px; color: var(--text3); margin-top: 6px; text-align: center; }
+.legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.leg-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text2); }
+.leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+/* モーダル（スマホ：下からスライドアップ） */
+.modal-backdrop {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.45);
+  align-items: flex-end; justify-content: center;
+}
+.modal-backdrop.open { display: flex; }
+.modal-box {
+  background: var(--bg); width: 100%; max-height: 88svh;
+  border-radius: 20px 20px 0 0;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 0 0 calc(24px + var(--safe-bottom));
+  position: relative;
+}
+.modal-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: var(--border2); margin: 10px auto 4px;
+}
+.modal-body { padding: 0 18px 8px; }
+.modal-close-btn {
+  position: absolute; top: 10px; right: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--bg2); border: none;
+  font-size: 14px; color: var(--text2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.modal-av { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+.modal-name { font-size: 17px; font-weight: 700; color: var(--text); }
+.modal-role { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.modal-desc { font-size: 13px; color: var(--text2); line-height: 1.7; border-top: 0.5px solid var(--border); padding-top: 10px; }
+.bounty-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.bounty-tag { font-size: 12px; background: #FAEEDA; color: #633806; border-radius: 8px; padding: 3px 10px; font-weight: 500; }
+@media (prefers-color-scheme: dark) { .bounty-tag { background: #412402; color: #FAC775; } }
+.sec-title { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin: 14px 0 6px; }
+.rel-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 0.5px solid var(--border);
+  font-size: 14px; color: var(--text);
+}
+.rel-row:last-child { border: none; }
+.rel-av { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.rel-type { font-size: 11px; color: var(--text2); margin-left: auto; }
+.spoiler-note { font-size: 12px; color: var(--text2); background: var(--bg2); border-radius: var(--radius); padding: 8px 12px; margin-top: 12px; line-height: 1.5; }
+.empty { text-align: center; padding: 3rem 1rem; color: var(--text2); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ヘッダー（スティッキー） -->
+<div class="header">
+  <div class="header-top">
+    <div class="app-title">ワンピース キャラ関係図</div>
+    <div class="mode-btns">
+      <button class="mbtn active" id="btnCard" onclick="setMode('card')">カード</button>
+      <button class="mbtn" id="btnNet" onclick="setMode('network')">ネットワーク</button>
+    </div>
+  </div>
+  <div class="vol-row">
+    <span class="vol-label">読んだ巻：</span>
+    <input class="vol-slider" type="range" id="volRange" min="1" max="109" value="25" step="1" oninput="onVol(this.value)">
+    <span class="vol-num" id="volDisp">1〜25巻</span>
+  </div>
+</div>
+
+<!-- 検索 -->
+<div class="search-wrap">
+  <input class="search-box" type="search" id="searchBox" placeholder="キャラ名で検索…" oninput="render()" autocomplete="off" autocorrect="off" spellcheck="false">
+</div>
+
+<!-- グループフィルター -->
+<div class="filter-section" style="margin-top:8px">
+  <div class="filter-label">グループ</div>
+  <div class="pill-row" id="groupBtns">
+    <button class="fbtn active" data-f="all">全員</button>
+    <button class="fbtn" data-f="麦わら海賊団">麦わら</button>
+    <button class="fbtn" data-f="海軍">海軍</button>
+    <button class="fbtn" data-f="四皇">四皇</button>
+    <button class="fbtn" data-f="七武海">七武海</button>
+    <button class="fbtn" data-f="革命軍">革命軍</button>
+    <button class="fbtn" data-f="和の国">和の国</button>
+    <button class="fbtn" data-f="その他">その他</button>
+  </div>
+</div>
+
+<!-- アークフィルター -->
+<div class="filter-section" style="margin-top:6px">
+  <div class="filter-label">アーク</div>
+  <div class="pill-row" id="arcRow"></div>
+</div>
+
+<!-- レジェンド（ネットワーク時のみ） -->
+<div class="filter-section" id="legendRow" style="display:none;margin-top:6px">
+  <div class="legend" id="legendInner"></div>
+</div>
+
+<!-- コンテンツ -->
+<div class="content">
+  <div id="cardView"><div id="cardGrid"></div></div>
+  <div id="netView" style="display:none">
+    <div id="netWrap"><canvas id="netCanvas"></canvas></div>
+    <div class="net-hint">ノードをドラッグ移動 · タップで詳細</div>
+  </div>
+</div>
+
+<!-- モーダル -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="onBackdropClick(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-handle"></div>
+    <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const GRP = {
+  "麦わら海賊団": { bg:"#FAECE7", fg:"#993C1D", dot:"#D85A30" },
+  "海軍":         { bg:"#E6F1FB", fg:"#0C447C", dot:"#378ADD" },
+  "四皇":         { bg:"#FCEBEB", fg:"#791F1F", dot:"#E24B4A" },
+  "七武海":       { bg:"#EEEDFE", fg:"#3C3489", dot:"#7F77DD" },
+  "革命軍":       { bg:"#EAF3DE", fg:"#27500A", dot:"#639922" },
+  "和の国":       { bg:"#FEF3E2", fg:"#7A4500", dot:"#D97706" },
+  "その他":       { bg:"#F1EFE8", fg:"#444441", dot:"#888780" }
+};
+const ARCS = [
+  {id:"east_blue",    name:"東の海編",          volMin:1,  volMax:8  },
+  {id:"alabasta",     name:"アラバスタ編",       volMin:12, volMax:23 },
+  {id:"skypiea",      name:"空島編",             volMin:24, volMax:32 },
+  {id:"water7",       name:"ウォーターセブン編", volMin:32, volMax:46 },
+  {id:"thriller_bark",name:"スリラーバーク編",   volMin:46, volMax:50 },
+  {id:"sabaody",      name:"シャボンディ諸島編", volMin:50, volMax:54 },
+  {id:"impel_down",   name:"インペルダウン編",   volMin:54, volMax:56 },
+  {id:"marineford",   name:"頂上決戦編",         volMin:56, volMax:61 },
+  {id:"fishman",      name:"魚人島編",           volMin:61, volMax:66 },
+  {id:"dressrosa",    name:"ドレスローザ編",     volMin:70, volMax:80 },
+  {id:"wano",         name:"和の国編",           volMin:82, volMax:105},
+];
+const CHARS = [
+  {id:"ルフィ",name:"モンキー・D・ルフィ",group:"麦わら海賊団",debut:1,
+   arcs:["east_blue","alabasta","skypiea","water7","thriller_bark","sabaody","impel_down","marineford","fishman","dressrosa","wano"],
+   history:[
+     {vol:1,role:"海賊見習い",desc:"ゴムゴムの実を食べたゴム人間。子供の頃シャンクスに拾われ、麦わら帽子を預かる。海賊王を目指して旅を始めた少年。",bounty:null},
+     {vol:8,role:"麦わら海賊団船長",desc:"ゴムゴムの実の能力者。仲間を集めながら東の海を旅した海賊。義侠心が強く、仲間のためなら命も厭わない。",bounty:"3000万"},
+     {vol:24,role:"麦わら海賊団船長",desc:"ゴムゴムの実の能力者。アラバスタでクロコダイルを倒し、偉大なる航路を進む海賊。",bounty:"1億"},
+     {vol:46,role:"麦わら海賊団船長",desc:"ゴムゴムの実の能力者。空島やウォーターセブンを経て成長した海賊。世界政府とも対立し始めている。",bounty:"3億"},
+     {vol:61,role:"麦わら海賊団船長",desc:"ゴムゴムの実の能力者。頂上決戦でエースを失い、2年間修行を積んで覇気を習得した海賊。",bounty:"4億"},
+     {vol:82,role:"麦わら海賊団船長",desc:"ゴムゴムの実の能力者。カイドウ打倒を目標に和の国へ上陸した海賊。おでんの夢を継ぐ者たちと同盟を結んでいる。",bounty:"15億"},
+   ],
+   rels:[{n:"ゾロ",t:"仲間"},{n:"ナミ",t:"仲間"},{n:"サンジ",t:"仲間"},{n:"シャンクス",t:"恩人"},{n:"エース",t:"義兄"},{n:"ガープ",t:"祖父"},{n:"サボ",t:"義兄",since:60},{n:"コビー",t:"友"},{n:"ジンベエ",t:"仲間",since:56},{n:"錦えもん",t:"同盟",since:82},{n:"おでん",t:"憧れの人",since:82}]},
+  {id:"ゾロ",name:"ロロノア・ゾロ",group:"麦わら海賊団",debut:1,
+   arcs:["east_blue","alabasta","skypiea","water7","thriller_bark","sabaody","fishman","dressrosa","wano"],
+   history:[
+     {vol:1,role:"賞金稼ぎ",desc:"三刀流の剣士。賞金稼ぎをしていたところルフィにスカウトされた。世界一の剣豪を目指している。",bounty:null},
+     {vol:8,role:"麦わら海賊団剣士",desc:"三刀流の剣士。ミホークとの戦いで敗北し、必ず超えると誓った。",bounty:"6000万"},
+     {vol:46,role:"麦わら海賊団剣士",desc:"三刀流の剣士。空島やウォーターセブンの戦いを経てさらに腕を磨いた。",bounty:"1億2000万"},
+     {vol:61,role:"麦わら海賊団剣士",desc:"三刀流の剣士。2年間ミホークのもとで修行を積み、覇気も習得した。",bounty:"3億2000万"},
+     {vol:82,role:"麦わら海賊団剣士",desc:"三刀流の剣士。和の国に上陸し、刀鍛冶・天狗山飛徹に認められた。カイドウの幹部たちとも渡り合う。",bounty:"3億2000万"},
+   ],
+   rels:[{n:"ルフィ",t:"仲間"},{n:"ミホーク",t:"目標"},{n:"サンジ",t:"ライバル"},{n:"日和",t:"因縁",since:93}]},
+  {id:"ナミ",name:"ナミ",group:"麦わら海賊団",debut:1,
+   arcs:["east_blue","alabasta","skypiea","water7","thriller_bark","sabaody","fishman","dressrosa","wano"],
+   history:[
+     {vol:1,role:"泥棒",desc:"天才的な航海の才能を持つ少女。故郷をアーロンに支配されており、海賊から金を奪って村を買い戻そうとしていた。",bounty:null},
+     {vol:9,role:"麦わら海賊団航海士",desc:"天才航海士。アーロン一味から解放された後、麦わら一味の正式な航海士になった。",bounty:"1600万"},
+     {vol:61,role:"麦わら海賊団航海士",desc:"天才航海士。2年間ウェザリア島で修行し、より強力な天候操作の技を習得した。",bounty:"3600万"},
+     {vol:82,role:"麦わら海賊団航海士",desc:"天才航海士。和の国で女中として潜入捜査をしながら、仲間たちとカイドウ討伐の準備を進める。",bounty:"3600万"},
+   ],
+   rels:[{n:"ルフィ",t:"仲間"},{n:"アーロン",t:"元主"},{n:"ウソップ",t:"仲間"}]},
+  {id:"ウソップ",name:"ウソップ",group:"麦わら海賊団",debut:2,
+   arcs:["east_blue","alabasta","skypiea","water7","thriller_bark","sabaody","fishman","dressrosa","wano"],
+   history:[
+     {vol:2,role:"嘘つき少年",desc:"海賊の父ヤソップを持つ嘘つき少年。勇敢な海の戦士を夢見ている。",bounty:null},
+     {vol:9,role:"麦わら海賊団狙撃手",desc:"麦わら一味の狙撃手。パチンコと発明品で戦う。",bounty:"3000万"},
+     {vol:61,role:"麦わら海賊団狙撃手",desc:"麦わら一味の狙撃手。2年間修行し、植物の力を扱うダイヤルを使いこなすようになった。",bounty:"2億"},
+     {vol:82,role:"麦わら海賊団狙撃手",desc:"麦わら一味の狙撃手。和の国では百姓に変装して潜入し、カイドウ討伐連合の一員として活動する。",bounty:"2億"},
+   ],
+   rels:[{n:"ルフィ",t:"仲間"},{n:"ヤソップ",t:"父"},{n:"ナミ",t:"仲間"}]},
+  {id:"サンジ",name:"サンジ",group:"麦わら海賊団",debut:5,
+   arcs:["east_blue","alabasta","skypiea","water7","thriller_bark","sabaody","impel_down","fishman","dressrosa","wano"],
+   history:[
+     {vol:5,role:"バラティエのコック",desc:"海上レストランバラティエで働くコック。足技を使う戦闘スタイルを持つ。オールブルーという伝説の海を目指している。",bounty:null},
+     {vol:9,role:"麦わら海賊団コック",desc:"天才コック。足だけで戦うスタイルを持つ。",bounty:"7700万"},
+     {vol:61,role:"麦わら海賊団コック",desc:"天才コック。2年間修行を積み、覇気と新技を習得した。",bounty:"1億7700万"},
+     {vol:82,role:"麦わら海賊団コック",desc:"天才コック。ヴィンスモーク家との因縁を乗り越え、和の国での戦いに参加する。",bounty:"3億3000万"},
+   ],
+   rels:[{n:"ルフィ",t:"仲間"},{n:"ゾロ",t:"ライバル"},{n:"ゼフ",t:"師匠"},{n:"イワンコフ",t:"知人",since:54}]},
+  {id:"チョッパー",name:"トニートニー・チョッパー",group:"麦わら海賊団",debut:15,
+   arcs:["alabasta","skypiea","water7","thriller_bark","sabaody","fishman","dressrosa","wano"],
+   history:[
+     {vol:15,role:"ドラム王国の医者見習い",desc:"ヒトヒトの実を食べたトナカイ。師匠ヒルルクの意志を継ぎ、全ての病気を治せる医者になることを夢見ている。",bounty:null},
+     {vol:17,role:"麦わら海賊団船医",desc:"ヒトヒトの実の能力者のトナカイ。変身形態を使い分けて戦い、仲間を癒す船医として活躍する。",bounty:"50"},
+     {vol:61,role:"麦わら海賊団船医",desc:"ヒトヒトの実の能力者のトナカイ。2年間修行し、ランブルボールなしで変身できるようになった。",bounty:"100"},
+     {vol:82,role:"麦わら海賊団船医",desc:"ヒトヒトの実の能力者のトナカイ。和の国では変身を活かして敵陣への潜入や治療で活躍する。",bounty:"100"},
+   ],
+   rels:[{n:"ルフィ",t:"仲間"},{n:"ヒルルク",t:"師匠"},{n:"くれは",t:"師匠"}]},
+  {id:"ロビン",name:"ニコ・ロビン",group:"麦わら海賊団",debut:13,
+   arcs:["alabasta","skypiea","water7","thriller_bark","sabaody","fishman","dressrosa","wano"],
+   history:[
+     {vol:13,role:"クロコダイルの部下",desc:"ハナハナの実の能力者。世界政府から長年追われている考古学者。バロックワークスの幹部として暗躍していた。",bounty:"7900万"},
+     {vol:24,role:"麦わら海賊団考古学者",desc:"ハナハナの実の能力者。ルフィに救われ、麦わら一味に加わった。ポーネグリフを読める唯一の人物。",bounty:"7900万"},
+     {vol:61,role:"麦わら海賊団考古学者",desc:"ハナハナの実の能力者。2年間革命軍のもとで過ごし、より強力な技を習得した。",bounty:"9300万"},
+     {vol:82,role:"麦わら海賊団考古学者",desc:"ハナハナの実の能力者。和の国のポーネグリフ調査に深く関わる。光月家の歴史とも関係が深い。",bounty:"9300万"},
+   ],
+   rels:[{n:"ルフィ",t:"仲間"},{n:"クロコダイル",t:"元雇用主"},{n:"CP9",t:"元敵",since:34},{n:"青雉",t:"因縁",since:27}]},
+  {id:"フランキー",name:"フランキー",group:"麦わら海賊団",debut:34,
+   arcs:["water7","thriller_bark","sabaody","fishman","dressrosa","wano"],
+   history:[
+     {vol:34,role:"フランキー一家のボス",desc:"ウォーターセブンのスクラップ街を仕切るサイボーグ。元々はトムズワーカーズの一員で造船の腕を持つ。",bounty:null},
+     {vol:36,role:"麦わら海賊団船大工",desc:"サイボーグの船大工。自らサウザンドサニー号を建造し、麦わら一味に加わった。",bounty:"4400万"},
+     {vol:61,role:"麦わら海賊団船大工",desc:"サイボーグの船大工。2年間で自身の体を大幅に改造し、より強力な武装を手に入れた。",bounty:"9400万"},
+     {vol:82,role:"麦わら海賊団船大工",desc:"サイボーグの船大工。和の国では将軍城に巨大戦闘機で乗り込むなど、圧倒的な火力で戦う。",bounty:"9400万"},
+   ],
+   rels:[{n:"ルフィ",t:"仲間"},{n:"アイスバーグ",t:"元仲間"}]},
+  {id:"ブルック",name:"ブルック",group:"麦わら海賊団",debut:46,
+   arcs:["thriller_bark","sabaody","fishman","dressrosa","wano"],
+   history:[
+     {vol:46,role:"幽霊船の音楽家",desc:"ヨミヨミの実の能力で甦った骸骨の音楽家。50年間孤独に海をさまよっていた。",bounty:"3300万"},
+     {vol:47,role:"麦わら海賊団音楽家",desc:"骸骨の音楽家。魂を切り離す力と剣術を使って戦う。",bounty:"3300万"},
+     {vol:61,role:"麦わら海賊団音楽家",desc:"骸骨の音楽家。2年間で魂の技をさらに磨いた。",bounty:"8300万"},
+     {vol:82,role:"麦わら海賊団音楽家",desc:"骸骨の音楽家。和の国では将軍城に侵入し、内部から敵の攪乱に活躍する。",bounty:"8300万"},
+   ],
+   rels:[{n:"ルフィ",t:"仲間"},{n:"ラブーン",t:"約束の友"},{n:"ペローナ",t:"元敵",since:46}]},
+  {id:"ジンベエ",name:"ジンベエ",group:"麦わら海賊団",debut:8,
+   arcs:["impel_down","marineford","fishman","dressrosa","wano"],
+   history:[
+     {vol:8,role:"七武海（魚人）",desc:"魚人空手の達人で七武海の一人。その名は東の海でも聞こえていたが、実態は謎に包まれていた。",bounty:null},
+     {vol:54,role:"元七武海",desc:"魚人空手の達人。七武海の地位を捨てルフィを助けたことで海軍と対立。義侠心の強い海賊として知られる。",bounty:"4億3800万"},
+     {vol:66,role:"魚人島の恩人",desc:"魚人空手の達人。ホーディとの戦いでは魚人島を守るためルフィたちと共に戦った。",bounty:"4億3800万"},
+     {vol:90,role:"麦わら海賊団操舵手",desc:"魚人空手の達人。和の国への道中、正式に麦わら一味の仲間になった。卓越した操舵術と戦闘力で一味を支える。",bounty:"4億3800万"},
+   ],
+   rels:[{n:"ルフィ",t:"仲間"},{n:"白ひげ",t:"恩人",since:25},{n:"エース",t:"守った相手",since:56},{n:"ホーディ",t:"元敵",since:62}]},
+  {id:"おでん",name:"光月おでん",group:"和の国",debut:82,arcs:["wano"],
+   history:[{vol:82,role:"光月家の当主（回想）",desc:"和の国・光月家の当主。20年前にカイドウとビッグ・マムによって命を落とした英雄。ロジャー海賊団にも参加しラフテルまで到達した伝説の男。九鞘を率いて和の国を解放しようとした。",bounty:null}],
+   rels:[{n:"錦えもん",t:"家臣"},{n:"おろち",t:"謀られた相手"},{n:"カイドウ",t:"宿敵"},{n:"モモの助",t:"息子"},{n:"日和",t:"娘"},{n:"ヤマト",t:"憧れられた人"},{n:"シャンクス",t:"元仲間（ロジャー海賊団）"},{n:"ルフィ",t:"意志を継ぐ者"}]},
+  {id:"錦えもん",name:"錦えもん",group:"和の国",debut:67,arcs:["fishman","dressrosa","wano"],
+   history:[
+     {vol:67,role:"和の国の侍",desc:"和の国からやってきた侍。息子のモモの助を連れてドレスローザに現れた。狐火流の使い手で衣装を自在に変える術を持つ。",bounty:null},
+     {vol:82,role:"九鞘の頭領",desc:"光月おでんの家臣で九鞘の頭領。20年の時を超えて和の国に戻り、カイドウ・おろちへの復讐とおでんの夢の実現を目指す。",bounty:"9200万"},
+   ],
+   rels:[{n:"おでん",t:"主君"},{n:"モモの助",t:"守る存在"},{n:"ルフィ",t:"同盟"},{n:"ロー",t:"協力者",since:82},{n:"おろち",t:"打倒目標"}]},
+  {id:"モモの助",name:"光月モモの助",group:"和の国",debut:67,arcs:["fishman","dressrosa","wano"],
+   history:[
+     {vol:67,role:"和の国の子供",desc:"和の国の子供。不思議な力を秘めているらしく、錦えもんが必死に守っている。",bounty:null},
+     {vol:82,role:"光月家の跡継ぎ",desc:"光月おでんの息子。光月家の正当な跡継ぎ。カイドウ打倒後の和の国の未来を背負って成長しようとしている。",bounty:null},
+   ],
+   rels:[{n:"おでん",t:"父"},{n:"日和",t:"妹",since:82},{n:"錦えもん",t:"家臣"},{n:"ルフィ",t:"信頼する人"},{n:"カイドウ",t:"打倒目標"}]},
+  {id:"日和",name:"光月日和",group:"和の国",debut:93,arcs:["wano"],
+   history:[{vol:93,role:"おでんの娘",desc:"光月おでんの娘。20年間、和の国でさまざまな苦労をしながら生き延びた。凛とした立ち振る舞いの女性。",bounty:null}],
+   rels:[{n:"おでん",t:"父"},{n:"モモの助",t:"兄"},{n:"ゾロ",t:"因縁"},{n:"錦えもん",t:"家臣"}]},
+  {id:"ヤマト",name:"ヤマト",group:"和の国",debut:97,arcs:["wano"],
+   history:[{vol:97,role:"カイドウの息子",desc:"カイドウの息子。しかしおでんに憧れ、自らをおでんと名乗り和の国を解放することを願い続けていた。イヌイヌの実モデル大神の能力者。",bounty:"10億"}],
+   rels:[{n:"カイドウ",t:"父（対立）"},{n:"おでん",t:"憧れの人"},{n:"ルフィ",t:"同志"},{n:"モモの助",t:"守る存在"},{n:"ブルック",t:"知人"}]},
+  {id:"おろち",name:"黒炭おろち",group:"和の国",debut:82,arcs:["wano"],
+   history:[{vol:82,role:"和の国の将軍",desc:"ヘビヘビの実モデル八岐大蛇の能力者。光月家を裏切り、カイドウと手を組んで和の国を20年間支配し続けてきた悪の将軍。",bounty:null}],
+   rels:[{n:"カイドウ",t:"同盟者"},{n:"おでん",t:"謀殺した相手"},{n:"錦えもん",t:"敵"},{n:"モモの助",t:"敵"}]},
+  {id:"百獣海賊団幹部",name:"百獣海賊団（幹部）",group:"和の国",debut:82,arcs:["wano"],
+   history:[{vol:82,role:"カイドウの幹部たち",desc:"カイドウ率いる百獣海賊団の幹部「飛び六包」「大看板」など。和の国を武力で支配するカイドウの右腕たち。それぞれ強力な悪魔の実や武装を持つ。",bounty:null}],
+   rels:[{n:"カイドウ",t:"船長"},{n:"ヤマト",t:"元仲間（離反）",since:97}]},
+  {id:"シャンクス",name:"シャンクス",group:"四皇",debut:1,arcs:["east_blue","marineford"],
+   history:[
+     {vol:1,role:"海賊（四皇）",desc:"赤髪のシャンクス。四皇と呼ばれる大海賊の一人。子供のルフィを助け、麦わら帽子を預けた。",bounty:null},
+     {vol:59,role:"四皇",desc:"赤髪のシャンクス。四皇の一人として新世界に君臨する大海賊。頂上決戦に突如現れ戦争を止めた。",bounty:null},
+   ],
+   rels:[{n:"ルフィ",t:"弟分"},{n:"バギー",t:"元仲間"},{n:"ミホーク",t:"ライバル"},{n:"レイリー",t:"元仲間",since:52},{n:"おでん",t:"元仲間（ロジャー海賊団）",since:82}]},
+  {id:"白ひげ",name:"白ひげ（エドワード・ニューゲート）",group:"四皇",debut:25,arcs:["sabaody","impel_down","marineford"],
+   history:[{vol:25,role:"四皇",desc:"グラグラの実の能力者。世界最強の男と呼ばれる伝説の海賊。多くの部下を息子のように愛する。",bounty:null}],
+   rels:[{n:"エース",t:"息子（海賊団員）",since:18},{n:"マルコ",t:"1番隊隊長",since:25},{n:"ジンベエ",t:"同盟者",since:54}]},
+  {id:"カイドウ",name:"カイドウ",group:"四皇",debut:50,arcs:["sabaody","dressrosa","wano"],
+   history:[
+     {vol:50,role:"四皇",desc:"百獣のカイドウと恐れられる四皇の一人。最強生物とも呼ばれており、その実力は謎に包まれている。",bounty:null},
+     {vol:70,role:"四皇",desc:"百獣のカイドウ。ドフラミンゴとの取引を通じてSMILE（人造悪魔の実）を集めていたことが明らかになった。",bounty:null},
+     {vol:82,role:"四皇/和の国の支配者",desc:"ウオウオの実モデル八岐大蛇の能力者。和の国をおろちと共に支配する四皇。20年前におでんを処刑した張本人。",bounty:null},
+   ],
+   rels:[{n:"ドフラミンゴ",t:"元取引相手"},{n:"ロー",t:"敵対"},{n:"おでん",t:"宿敵（過去）",since:82},{n:"ヤマト",t:"息子（対立）",since:97},{n:"ルフィ",t:"最終決戦の相手",since:82},{n:"百獣海賊団幹部",t:"部下",since:82}]},
+  {id:"エース",name:"ポートガス・D・エース",group:"その他",debut:18,arcs:["alabasta","impel_down","marineford"],
+   history:[
+     {vol:18,role:"白ひげ海賊団2番隊隊長",desc:"メラメラの実の能力者。ルフィの義兄で白ひげ海賊団の幹部。海賊として新世界を渡り歩いている。",bounty:"5500万"},
+     {vol:22,role:"白ひげ海賊団2番隊隊長",desc:"メラメラの実の能力者。ルフィの義兄。黒ひげに捕まり海軍に引き渡された。",bounty:"5億5000万"},
+   ],
+   rels:[{n:"ルフィ",t:"義弟"},{n:"サボ",t:"義兄弟",since:60},{n:"白ひげ",t:"父（親）"},{n:"ガープ",t:"育て親"},{n:"ジンベエ",t:"守ってもらった",since:56}]},
+  {id:"サボ",name:"サボ",group:"革命軍",debut:60,arcs:["dressrosa"],
+   history:[{vol:60,role:"革命軍幹部",desc:"革命軍のNo.2。過去にルフィ・エースと義兄弟の契りを交わした少年だったが、事故で記憶を失っていた。",bounty:"6億0200万"}],
+   rels:[{n:"ルフィ",t:"義兄弟"},{n:"エース",t:"義兄弟"},{n:"ドラゴン",t:"上司",since:60}]},
+  {id:"ドラゴン",name:"モンキー・D・ドラゴン",group:"革命軍",debut:11,arcs:["east_blue","sabaody","marineford"],
+   history:[
+     {vol:11,role:"革命軍総帥",desc:"世界最悪の犯罪者と恐れられる革命軍のリーダー。ルフィとの関係は長らく謎に包まれていた。",bounty:null},
+     {vol:52,role:"革命軍総帥",desc:"世界最悪の犯罪者と恐れられる革命軍総帥。ルフィの父であることが判明している。",bounty:null},
+   ],
+   rels:[{n:"ルフィ",t:"息子"},{n:"ガープ",t:"父"},{n:"サボ",t:"部下",since:60},{n:"イワンコフ",t:"仲間",since:54}]},
+  {id:"イワンコフ",name:"エンポリオ・イワンコフ",group:"革命軍",debut:54,arcs:["impel_down","marineford"],
+   history:[{vol:54,role:"革命軍幹部",desc:"ホルホルの実の能力者。オカマの国の女王で革命軍の幹部。インペルダウンに収監されていた。",bounty:null}],
+   rels:[{n:"サンジ",t:"知人"},{n:"ドラゴン",t:"仲間"},{n:"ルフィ",t:"恩人"}]},
+  {id:"ガープ",name:"ガープ",group:"海軍",debut:2,arcs:["east_blue","sabaody","marineford"],
+   history:[
+     {vol:2,role:"海軍中将",desc:"英雄ガープと呼ばれる伝説的な海軍中将。正体不明の老人として登場したが、その実力は本物。",bounty:null},
+     {vol:45,role:"海軍中将",desc:"英雄ガープと呼ばれる伝説の海軍中将。ルフィの祖父であり、エースの育て親でもあることが明かされた。",bounty:null},
+   ],
+   rels:[{n:"ルフィ",t:"孫"},{n:"エース",t:"養孫"},{n:"センゴク",t:"旧友"},{n:"ドラゴン",t:"息子",since:52},{n:"コビー",t:"弟子",since:8}]},
+  {id:"センゴク",name:"センゴク",group:"海軍",debut:11,arcs:["sabaody","impel_down","marineford"],
+   history:[{vol:11,role:"海軍元帥",desc:"海軍のトップに立つ元帥。世界政府の意向を受け海の秩序を守る立場にある。",bounty:null}],
+   rels:[{n:"ガープ",t:"旧友"},{n:"赤犬",t:"部下",since:50},{n:"黄猿",t:"部下",since:50},{n:"コラソン",t:"部下",since:70}]},
+  {id:"赤犬",name:"赤犬（サカズキ）",group:"海軍",debut:50,arcs:["sabaody","marineford"],
+   history:[{vol:50,role:"海軍大将",desc:"マグマグの実の能力者。徹底した正義を掲げる鬼の大将。その力は頂上の海賊たちにも恐れられる。",bounty:null}],
+   rels:[{n:"センゴク",t:"上司"},{n:"黄猿",t:"同僚"},{n:"青雉",t:"同僚"},{n:"白ひげ",t:"敵",since:56}]},
+  {id:"黄猿",name:"黄猿（ボルサリーノ）",group:"海軍",debut:50,arcs:["sabaody","marineford"],
+   history:[{vol:50,role:"海軍大将",desc:"ピカピカの実の能力者。光速の動きを持つ海軍大将。のんびりした口調に反して非常に強力。",bounty:null}],
+   rels:[{n:"センゴク",t:"上司"},{n:"赤犬",t:"同僚"},{n:"青雉",t:"同僚"},{n:"レイリー",t:"因縁",since:52}]},
+  {id:"青雉",name:"青雉（クザン）",group:"海軍",debut:27,arcs:["alabasta","sabaody","marineford"],
+   history:[{vol:27,role:"海軍大将",desc:"ヒエヒエの実の能力者。海軍大将の一人。正義のあり方に疑問を持つ。",bounty:null}],
+   rels:[{n:"センゴク",t:"上司"},{n:"赤犬",t:"同僚"},{n:"黄猿",t:"同僚"},{n:"ロビン",t:"因縁"}]},
+  {id:"コビー",name:"コビー",group:"海軍",debut:1,arcs:["east_blue","sabaody","marineford"],
+   history:[
+     {vol:1,role:"アルビダ船のボーイ",desc:"海賊船でこき使われていた気弱な少年。ルフィと出会い、海軍になる夢を取り戻した。",bounty:null},
+     {vol:8,role:"海軍の卵",desc:"夢だった海軍に入隊した元気な少年。ガープの下で修行を始めている。",bounty:null},
+     {vol:52,role:"海軍兵士",desc:"ルフィの最初の友人。シャボンディ諸島で成長した姿で再登場。",bounty:null},
+   ],
+   rels:[{n:"ルフィ",t:"友"},{n:"ヘルメッポ",t:"相棒",since:8},{n:"ガープ",t:"師匠",since:8}]},
+  {id:"コラソン",name:"コラソン（ロシナンテ）",group:"海軍",debut:70,arcs:["dressrosa"],
+   history:[{vol:70,role:"海軍中将（秘密）",desc:"ドフラミンゴの弟。ローを救うため秘密裏に動いた海軍中将。ノシノシの実の能力者で無音の空間を作れる。",bounty:null}],
+   rels:[{n:"ロー",t:"守った相手"},{n:"ドフラミンゴ",t:"兄"},{n:"センゴク",t:"上司"}]},
+  {id:"クロコダイル",name:"クロコダイル",group:"七武海",debut:13,arcs:["alabasta","impel_down","marineford"],
+   history:[
+     {vol:13,role:"七武海/バロックワークスボス",desc:"スナスナの実の能力者。七武海の一人にしてアラバスタ王国転覆を企む組織の黒幕。",bounty:null},
+     {vol:55,role:"元七武海",desc:"スナスナの実の能力者。七武海の地位を失いインペルダウンに収監されていた。",bounty:"8100万"},
+   ],
+   rels:[{n:"ロビン",t:"元部下"},{n:"ルフィ",t:"元敵"},{n:"バギー",t:"収監中の知人",since:54}]},
+  {id:"ミホーク",name:"ジュラキュール・ミホーク",group:"七武海",debut:6,arcs:["east_blue","marineford"],
+   history:[{vol:6,role:"七武海/世界最強の剣士",desc:"鷹の目のミホークと呼ばれる世界一の剣士。七武海の一人。ゾロを圧倒し、いつかまた来いと言い放った。",bounty:null}],
+   rels:[{n:"ゾロ",t:"目標"},{n:"シャンクス",t:"ライバル"}]},
+  {id:"ハンコック",name:"ボア・ハンコック",group:"七武海",debut:53,arcs:["sabaody","impel_down","marineford"],
+   history:[{vol:53,role:"七武海/女ヶ島の蛇姫",desc:"メロメロの実の能力者。女だけの国アマゾン・リリーの女王で七武海の一人。",bounty:"8000万"}],
+   rels:[{n:"ルフィ",t:"恋愛感情",since:53},{n:"レイリー",t:"知人",since:52}]},
+  {id:"ドフラミンゴ",name:"ドフラミンゴ",group:"七武海",debut:25,arcs:["alabasta","sabaody","dressrosa"],
+   history:[
+     {vol:25,role:"七武海",desc:"イトイトの実の能力者。七武海の一人として頂上の海で存在感を示す謎の男。",bounty:null},
+     {vol:70,role:"七武海/ドレスローザ王",desc:"イトイトの実の能力者。ドレスローザ王国を支配する七武海。裏社会では武器商人として君臨していた。",bounty:null},
+   ],
+   rels:[{n:"コラソン",t:"弟（元）",since:70},{n:"ロー",t:"元部下→敵",since:51},{n:"カイドウ",t:"取引相手",since:50},{n:"ルフィ",t:"敵",since:70}]},
+  {id:"ロー",name:"トラファルガー・ロー",group:"七武海",debut:51,arcs:["sabaody","fishman","dressrosa","wano"],
+   history:[
+     {vol:51,role:"超新星",desc:"オペオペの実の能力者。死の外科医と呼ばれるスーパールーキー。",bounty:"2億"},
+     {vol:61,role:"七武海/超新星",desc:"オペオペの実の能力者。七武海となり、ルフィに同盟を持ちかける。",bounty:"4億4000万"},
+     {vol:82,role:"超新星/カイドウ討伐連合",desc:"オペオペの実の能力者。七武海の地位を失った後も錦えもんたちと組み、和の国のカイドウ打倒に向けて動く。",bounty:"5億"},
+   ],
+   rels:[{n:"ルフィ",t:"同盟",since:61},{n:"ドフラミンゴ",t:"元師匠→敵",since:70},{n:"コラソン",t:"恩人",since:70},{n:"錦えもん",t:"協力者",since:82}]},
+  {id:"バギー",name:"バギー",group:"七武海",debut:1,arcs:["east_blue","impel_down","marineford"],
+   history:[
+     {vol:1,role:"バギー海賊団船長",desc:"バラバラの実の能力者。東の海を荒らす小悪党。かつてシャンクスと同じ船に乗っていた。",bounty:"1500万"},
+     {vol:55,role:"元七武海",desc:"バラバラの実の能力者。インペルダウンで脱獄し頂上決戦にも参加した人物。",bounty:"1億5000万"},
+   ],
+   rels:[{n:"シャンクス",t:"元仲間"},{n:"ルフィ",t:"元敵→知人"},{n:"クロコダイル",t:"収監中の知人",since:54}]},
+  {id:"ゲッコー・モリア",name:"ゲッコー・モリア",group:"七武海",debut:46,arcs:["thriller_bark"],
+   history:[{vol:46,role:"七武海/スリラーバーク船長",desc:"カゲカゲの実の能力者。巨大な船スリラーバークを操る七武海。影を使って軍隊を操る。",bounty:null}],
+   rels:[{n:"ルフィ",t:"元敵"},{n:"ペローナ",t:"部下"}]},
+  {id:"レイリー",name:"シルバーズ・レイリー",group:"その他",debut:52,arcs:["sabaody","impel_down"],
+   history:[{vol:52,role:"伝説の剣士",desc:"冥王レイリーと呼ばれる伝説的な人物。シャボンディ諸島でコーティングの仕事をしながら暮らしていた。",bounty:null}],
+   rels:[{n:"シャンクス",t:"元仲間"},{n:"ルフィ",t:"師匠",since:54},{n:"黄猿",t:"因縁"},{n:"ハンコック",t:"知人"},{n:"おでん",t:"元仲間（ロジャー海賊団）",since:82}]},
+  {id:"ビビ",name:"ネフェルタリ・ビビ",group:"その他",debut:14,arcs:["alabasta"],
+   history:[{vol:14,role:"アラバスタ王国王女",desc:"アラバスタ王国の王女。クロコダイルの組織に潜入して情報を集めていたが正体がバレ麦わら一味と旅することになった。",bounty:null}],
+   rels:[{n:"ルフィ",t:"友"},{n:"ナミ",t:"友"},{n:"クロコダイル",t:"元敵"}]},
+  {id:"エネル",name:"エネル",group:"その他",debut:26,arcs:["skypiea"],
+   history:[{vol:26,role:"空島の神",desc:"ゴロゴロの実の能力者。スカイピアを支配する自称「神」。雷を自在に操り島全体を支配している。",bounty:null}],
+   rels:[{n:"ルフィ",t:"元敵"}]},
+  {id:"マルコ",name:"マルコ",group:"その他",debut:25,arcs:["sabaody","marineford","wano"],
+   history:[
+     {vol:25,role:"白ひげ海賊団1番隊隊長",desc:"トリトリの実モデル不死鳥の能力者。白ひげ海賊団の1番隊隊長。白ひげの右腕として信頼を受けている。",bounty:null},
+     {vol:98,role:"元白ひげ海賊団1番隊隊長",desc:"トリトリの実モデル不死鳥の能力者。白ひげ亡き後も仲間を守り続け、和の国の戦いにも駆けつけた。",bounty:null},
+   ],
+   rels:[{n:"白ひげ",t:"船長"},{n:"エース",t:"弟分",since:18},{n:"ルフィ",t:"協力者",since:98}]},
+  {id:"ホーディ",name:"ホーディ・ジョーンズ",group:"その他",debut:62,arcs:["fishman"],
+   history:[{vol:62,role:"新魚人海賊団船長",desc:"新魚人海賊団の船長。エネルギーステロイドで強化された魚人。人間への憎悪を原動力にして魚人島支配を目論む。",bounty:null}],
+   rels:[{n:"ルフィ",t:"元敵"},{n:"ジンベエ",t:"元敵"},{n:"シラホシ",t:"元敵"}]},
+  {id:"シラホシ",name:"シラホシ",group:"その他",debut:62,arcs:["fishman"],
+   history:[{vol:62,role:"魚人島王女",desc:"魚人島の王女。古代兵器ポセイドンの力を持つと言われている。気弱だが優しい性格。",bounty:null}],
+   rels:[{n:"ルフィ",t:"友"},{n:"ネプチューン",t:"父"},{n:"ホーディ",t:"元敵"},{n:"ジンベエ",t:"知人",since:8}]},
+  {id:"ペローナ",name:"ペローナ",group:"その他",debut:46,arcs:["thriller_bark","sabaody"],
+   history:[{vol:46,role:"スリラーバーク四天王",desc:"ホロホロの実の能力者。ゲッコー・モリアの四天王の一人。幽霊を使って敵の気力を奪う。",bounty:null}],
+   rels:[{n:"ゲッコー・モリア",t:"元主"},{n:"ゾロ",t:"因縁",since:46},{n:"ブルック",t:"元敵",since:46}]},
+  {id:"CP9",name:"CP9（ルッチ）",group:"その他",debut:34,arcs:["water7"],
+   history:[{vol:34,role:"世界政府諜報員",desc:"世界政府の諜報機関CP9のリーダー。ネコネコの実の能力者。ガレーラカンパニーに潜入し任務を遂行した。",bounty:null}],
+   rels:[{n:"ロビン",t:"元敵"},{n:"ルフィ",t:"元敵"}]},
+  {id:"アイスバーグ",name:"アイスバーグ",group:"その他",debut:32,arcs:["water7"],
+   history:[{vol:32,role:"ガレーラカンパニー社長",desc:"ウォーターセブンの大造船会社社長。トムズワーカーズ出身でフランキーの兄弟子。",bounty:null}],
+   rels:[{n:"フランキー",t:"弟弟子"},{n:"CP9",t:"元敵"}]},
+];
+
+// ─── State ───
+let curVol=25,activeFilter="all",activeArc=null,mode="card";
+let nodes=[],edges=[],animId=null;
+let dragging=null,dragStartX=0,dragStartY=0,hasDragged=false;
+let canvas,ctx,selectedNode=null;
+
+function getCharState(c){const h=c.history.filter(x=>x.vol<=curVol);return h.length?h[h.length-1]:null}
+function visibleRels(c){return c.rels.filter(r=>{const rc=CHARS.find(x=>x.id===r.n||x.name===r.n);if(!rc||rc.debut>curVol)return false;if(r.since&&r.since>curVol)return false;return true})}
+function visibleChars(){
+  let list=CHARS.filter(c=>c.debut<=curVol&&getCharState(c));
+  if(activeFilter!=="all")list=list.filter(c=>c.group===activeFilter);
+  if(activeArc)list=list.filter(c=>c.arcs.includes(activeArc));
+  const q=document.getElementById("searchBox").value.trim();
+  if(q)list=list.filter(c=>c.name.includes(q)||c.id.includes(q));
+  return list;
+}
+function onVol(v){
+  curVol=parseInt(v);
+  document.getElementById("volDisp").textContent="1〜"+v+"巻";
+  renderArcRow();
+  if(mode==="network")initNetwork();else render();
+}
+function setMode(m){
+  mode=m;
+  document.getElementById("btnCard").classList.toggle("active",m==="card");
+  document.getElementById("btnNet").classList.toggle("active",m==="network");
+  document.getElementById("cardView").style.display=m==="card"?"block":"none";
+  document.getElementById("netView").style.display=m==="network"?"block":"none";
+  document.getElementById("legendRow").style.display=m==="network"?"block":"none";
+  closeModal();
+  if(m==="network")initNetwork();else render();
+}
+function renderArcRow(){
+  document.getElementById("arcRow").innerHTML=ARCS.map(a=>{
+    const locked=a.volMin>curVol;
+    return`<button class="arc-pill${activeArc===a.id?" active":""}${locked?" locked":""}" onclick="toggleArc('${a.id}',${locked})">${a.name}</button>`;
+  }).join("");
+}
+function toggleArc(id,locked){if(locked)return;activeArc=activeArc===id?null:id;renderArcRow();if(mode==="network")initNetwork();else render()}
+function render(){
+  const grid=document.getElementById("cardGrid");
+  const list=visibleChars();
+  if(!list.length){grid.innerHTML='<div class="empty">該当するキャラがいません</div>';return}
+  grid.innerHTML=list.map(c=>{
+    const g=GRP[c.group]||GRP["その他"];
+    const st=getCharState(c);
+    const short=c.name.length>9?c.name.slice(0,9)+"…":c.name;
+    return`<div class="card" onclick='showModal("${c.id}")'>
+      <div class="card-top"><div class="av" style="background:${g.bg};color:${g.fg}">${c.id.slice(0,2)}</div>
+      <div><div class="c-name">${short}</div><div class="c-role">${st?st.role:""}</div></div></div>
+      <span class="c-badge" style="background:${g.bg};color:${g.fg}">${c.group}</span>
+      <div class="c-debut">初登場 ${c.debut}巻</div></div>`;
+  }).join("");
+}
+function showModal(id){
+  const c=CHARS.find(x=>x.id===id);if(!c)return;
+  const g=GRP[c.group]||GRP["その他"];
+  const st=getCharState(c);if(!st)return;
+  const vRels=visibleRels(c);
+  const hidden=c.rels.length-vRels.length;
+  document.getElementById("modalBody").innerHTML=`
+    <div class="modal-head">
+      <div class="modal-av" style="background:${g.bg};color:${g.fg}">${c.id.slice(0,2)}</div>
+      <div><div class="modal-name">${c.name}</div><div class="modal-role">${st.role}</div></div>
+    </div>
+    <div class="modal-desc">${st.desc}</div>
+    <div class="bounty-row">
+      <span class="c-badge" style="background:${g.bg};color:${g.fg}">${c.group}</span>
+      ${st.bounty&&st.bounty!=="—"?`<span class="bounty-tag">懸賞金 ${st.bounty}ベリー</span>`:`<span style="font-size:11px;color:var(--text3)">懸賞金 不明 / 公開なし</span>`}
+    </div>
+    <div class="sec-title">関係（${curVol}巻時点）</div>
+    ${vRels.length?vRels.map(r=>{
+      const rc=CHARS.find(x=>x.id===r.n||x.name===r.n);
+      const rg=rc?GRP[rc.group]||GRP["その他"]:GRP["その他"];
+      return`<div class="rel-row"><div class="rel-av" style="background:${rg.bg};color:${rg.fg}">${r.n.slice(0,2)}</div><span>${r.n}</span><span class="rel-type">${r.t}</span></div>`;
+    }).join(""):'<div style="font-size:13px;color:var(--text2);padding:8px 0">まだ関係が明かされていない</div>'}
+    ${hidden?`<div class="spoiler-note">あと${hidden}件の関係は続きを読むと解放されます</div>`:""}
+  `;
+  document.getElementById("modalBackdrop").classList.add("open");
+}
+function closeModal(){document.getElementById("modalBackdrop").classList.remove("open");selectedNode=null}
+function onBackdropClick(e){if(e.target===document.getElementById("modalBackdrop"))closeModal()}
+
+// ─── Network ───
+function initNetwork(){
+  canvas=document.getElementById("netCanvas");
+  ctx=canvas.getContext("2d");
+  const wrap=document.getElementById("netWrap");
+  const W=wrap.clientWidth||360;
+  const list=visibleChars();
+  const H=Math.max(400,Math.min(660,list.length*18+100));
+  canvas.width=W*window.devicePixelRatio;
+  canvas.height=H*window.devicePixelRatio;
+  canvas.style.width=W+"px";
+  canvas.style.height=H+"px";
+  ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
+  wrap.style.height=H+"px";
+  const existing=Object.fromEntries((nodes||[]).map(n=>[n.id,{x:n.x,y:n.y}]));
+  nodes=list.map((c,i)=>{
+    const prev=existing[c.id];
+    if(prev)return{id:c.id,c,x:prev.x,y:prev.y,vx:0,vy:0,r:20};
+    const angle=(i/list.length)*Math.PI*2;
+    const r=Math.min(W,H)*0.3;
+    return{id:c.id,c,x:W/2+r*Math.cos(angle),y:H/2+r*Math.sin(angle),vx:0,vy:0,r:20};
+  });
+  edges=[];
+  nodes.forEach(n=>{
+    visibleRels(n.c).forEach(rel=>{
+      const t=nodes.find(m=>m.id===rel.n||m.c.name===rel.n);
+      if(t&&t.id>n.id)edges.push({a:n,b:t,type:rel.t});
+    });
+  });
+  document.getElementById("legendInner").innerHTML=Object.entries(GRP).map(([k,v])=>`<div class="leg-item"><div class="leg-dot" style="background:${v.dot}"></div><span>${k}</span></div>`).join("");
+  selectedNode=null;closeModal();
+  if(animId)cancelAnimationFrame(animId);
+  loop();setupCanvasEvents();
+}
+function loop(){
+  const W=parseInt(canvas.style.width),H=parseInt(canvas.style.height);
+  nodes.forEach(n=>{
+    if(n===dragging)return;
+    nodes.forEach(m=>{
+      if(n===m)return;
+      const dx=n.x-m.x,dy=n.y-m.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const f=1400/(d*d);n.vx+=dx/d*f;n.vy+=dy/d*f;
+    });
+    n.vx+=(W/2-n.x)*0.004;n.vy+=(H/2-n.y)*0.004;
+  });
+  edges.forEach(e=>{
+    const dx=e.b.x-e.a.x,dy=e.b.y-e.a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+    const f=(d-120)*0.04;
+    e.a.vx+=dx/d*f;e.a.vy+=dy/d*f;
+    e.b.vx-=dx/d*f;e.b.vy-=dy/d*f;
+  });
+  nodes.forEach(n=>{
+    if(n===dragging)return;
+    n.vx*=0.8;n.vy*=0.8;
+    n.x=Math.max(n.r+2,Math.min(W-n.r-2,n.x+n.vx));
+    n.y=Math.max(n.r+2,Math.min(H-n.r-2,n.y+n.vy));
+  });
+  drawNet();
+  animId=requestAnimationFrame(loop);
+}
+function drawNet(){
+  const W=parseInt(canvas.style.width),H=parseInt(canvas.style.height);
+  ctx.clearRect(0,0,W,H);
+  const selEdges=selectedNode?edges.filter(e=>e.a===selectedNode||e.b===selectedNode):[];
+  edges.forEach(e=>{
+    const isSel=selEdges.includes(e);
+    ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
+    ctx.strokeStyle=isSel?"#7F77DD":"rgba(136,135,128,0.2)";
+    ctx.lineWidth=isSel?2:1;ctx.stroke();
+    if(isSel){
+      const lx=(e.a.x+e.b.x)/2,ly=(e.a.y+e.b.y)/2;
+      ctx.save();ctx.font="bold 10px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
+      const tw=ctx.measureText(e.type).width;
+      ctx.fillStyle="rgba(238,237,254,0.93)";ctx.fillRect(lx-tw/2-3,ly-8,tw+6,16);
+      ctx.fillStyle="#3C3489";ctx.fillText(e.type,lx,ly);ctx.restore();
+    }
+  });
+  nodes.forEach(n=>{
+    const g=GRP[n.c.group]||GRP["その他"];
+    const isSel=n===selectedNode;
+    const isConn=!!selectedNode&&selEdges.some(e=>e.a===n||e.b===n)&&!isSel;
+    const fade=!!selectedNode&&!isSel&&!isConn;
+    ctx.globalAlpha=fade?0.3:1;
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r+(isSel?5:0),0,Math.PI*2);
+    ctx.fillStyle=isSel?"#7F77DD":isConn?"#AFA9EC":g.dot;
+    ctx.fill();ctx.strokeStyle="rgba(255,255,255,0.75)";ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle="#fff";ctx.font="bold 10px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText(n.id.slice(0,2),n.x,n.y);
+    ctx.fillStyle=isSel?"#3C3489":g.fg;
+    ctx.font=(isSel?"bold ":"")+"10px sans-serif";ctx.textBaseline="top";ctx.textAlign="center";
+    ctx.fillText(n.id,n.x,n.y+n.r+3);
+    ctx.globalAlpha=1;
+  });
+  ctx.textBaseline="alphabetic";
+}
+function getNodeAt(x,y){return nodes.find(n=>Math.hypot(n.x-x,n.y-y)<=n.r+6)||null}
+function canvasPos(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+function canvasPosT(t){const r=canvas.getBoundingClientRect();return{x:t.clientX-r.left,y:t.clientY-r.top}}
+function setupCanvasEvents(){
+  canvas.onmousedown=e=>{const{x,y}=canvasPos(e);dragStartX=x;dragStartY=y;hasDragged=false;const n=getNodeAt(x,y);if(n)dragging=n};
+  canvas.onmousemove=e=>{if(!dragging)return;const{x,y}=canvasPos(e);if(Math.hypot(x-dragStartX,y-dragStartY)>4)hasDragged=true;dragging.x=x;dragging.y=y;dragging.vx=0;dragging.vy=0};
+  canvas.onmouseup=e=>{const{x,y}=canvasPos(e);const n=getNodeAt(x,y);if(!hasDragged&&n){if(selectedNode===n){closeModal();selectedNode=null}else{selectedNode=n;showModal(n.id)}}dragging=null;hasDragged=false};
+  canvas.onmouseleave=()=>{dragging=null};
+  canvas.ontouchstart=e=>{e.preventDefault();const t=e.touches[0];const{x,y}=canvasPosT(t);dragStartX=x;dragStartY=y;hasDragged=false;const n=getNodeAt(x,y);if(n)dragging=n};
+  canvas.ontouchmove=e=>{e.preventDefault();if(!dragging)return;const t=e.touches[0];const{x,y}=canvasPosT(t);if(Math.hypot(x-dragStartX,y-dragStartY)>8)hasDragged=true;dragging.x=x;dragging.y=y;dragging.vx=0;dragging.vy=0};
+  canvas.ontouchend=e=>{if(!hasDragged&&dragging){if(selectedNode===dragging){closeModal();selectedNode=null}else{selectedNode=dragging;showModal(dragging.id)}}dragging=null;hasDragged=false};
+}
+document.getElementById("groupBtns").addEventListener("click",e=>{
+  if(!e.target.classList.contains("fbtn"))return;
+  document.querySelectorAll(".fbtn").forEach(b=>b.classList.remove("active"));
+  e.target.classList.add("active");activeFilter=e.target.dataset.f;
+  if(mode==="network")initNetwork();else render();
+});
+renderArcRow();render();
+</script>
+</body>
+</html>
